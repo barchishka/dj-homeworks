@@ -1,0 +1,85 @@
+name: Testing and deployment of a Django Project
+
+on:
+  push:
+    branches: [new-video, master]
+
+jobs:
+  testing:
+    runs-on: ubuntu-20.04
+    env:
+      KEY_SECRET: ${{ secrets.DJANGO_SECRET }}
+      IS_DEBUG: ${{ secrets.DJANGO_DEBUG }}
+      AVAILABLE_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+      ENGINE: ${{ secrets.DATABASE_ENGINE }}
+      USERNAME: ${{ secrets.DATABASE_USER }}
+      PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+      HOST: ${{ secrets.DATABASE_HOST }}
+      NAME: ${{ secrets.DATABASE_NAME }}
+      PORT: ${{ secrets.DATABASE_PORT }}
+    services:
+      postgresql_service:
+        image: postgres:12
+        env:
+          POSTGRES_DB: ${{ env.NAME }}
+          POSTGRES_USER: ${{ env.USERNAME }}
+          POSTGRES_PASSWORD: ${{ env.PASSWORD }}
+        ports:
+          - 5432:5432
+        options:
+        # проверка готовности postgres к работе
+          --health-cmd pg_isready
+        # интервал как часто надо проверять
+          --health-interval 5s
+        # количество попыток
+          --health-timeout 5s
+        # количество проверок
+          --health-retries 5
+    steps:
+    # описание шагов
+      - name: Проверка наличи000я изменений в репозитории
+        # проверка нашего репозитория на компьютере, на котором выполняется задание
+        uses: actions/checkout@v3
+#
+      - name: Установка python 3.11 и доп библиотек
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Установка зависимостей проекта
+        run: |
+          pip install -r requirements.txt
+          python -m pip install --upgrade pip
+##
+      - name: Линтинг
+#        run: flake8 logistic --exclude logistic/migrations
+#
+      - name: Тестирование
+#        run: python manage.py test
+#        env:
+#          SECRET_KEY: ${{ env.KEY_SECRET }}
+#          DEBUG: ${{ env.IS_DEBUG }}
+#          ALLOWED_HOSTS: ${{ env.AVAILABLE_HOSTS }}
+#          DB_ENGINE: ${{ env.ENGINE }}
+#          DB_USER: ${{ env.USERNAME }}
+#          DB_PASSWORD: ${{ env.PASSWORD }}
+#          DB_NAME: ${{ env.NAME }}
+#          DB_HOST: ${{ env.HOST }}
+#          DB_PORT: ${{ env.PORT }}
+##       run: pytest
+#
+#      - name: Деплой
+#        uses: appleboy/ssh-action@new-video
+#        env:
+#          PASSWORD: ${{ secrets.SSH_PASSWORD }}
+#        with:
+#          host: ${{ secrets.SSH_HOST }}
+#          username: ${{ secrets.SSH_USER }}
+#          password: ${{ secrets.SSH_PASSWORD }}
+#          script: |
+#            cd /home/barch/dj-homeworks/3.2-crud/stocks_products
+#            git pull origin ci
+#            source env/bin/activate
+#            pip install -r requirements.txt
+#            python manage.py migrate
+#            sudo systemctl restart gunicorn

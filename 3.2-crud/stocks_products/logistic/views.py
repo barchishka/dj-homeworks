@@ -1,18 +1,18 @@
-from rest_framework.viewsets import ModelViewSet
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import api_view
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
+from rest_framework.viewsets import ModelViewSet
 
-from logistic.serializers import ProductSerializer, StockSerializer
-from logistic.models import Product, Stock
+from .models import Stock, Product
+from .serializers import ProductSerializer, StockSerializer
+
 
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     # при необходимости добавьте параметры фильтрации
-    filter_backends = [filters.SearchFilter]
+    filter_backends = [SearchFilter]
     search_fields = ['title', 'description']
 
 
