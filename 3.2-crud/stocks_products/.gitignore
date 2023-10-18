@@ -1,0 +1,5 @@
+.idea
+__pycache__
+venv
+action.txt
+/stocks_products/.env

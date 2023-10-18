@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Рецепты</title>
+</head>
+<body>
+    <h3><a href="{% url 'list' %}">< {{ recipe_name|capfirst }}</a></h3>
+    {% for ingredient, amount in recipe.items %}
+    <p><li>{{ ingredient }}: {{ amount }}</li>
+
+{% empty %}
+    <p>Такого рецепта не знаю :(</p>
+{% endfor %}
+</body>
+</html>
